@@ -152,15 +152,42 @@ class BigCard extends StatelessWidget {
       The widget doesn't care what it's wrapping.
     */
 
-    // requests the app's current theme
+    // access the app's current theme
     final theme = Theme.of(context);
+    // access the app's font/text theme using theme.textTheme
+    /*
+      theme.textTheme
+      includes members such as bodyMedium (for standard text of medium size),
+      caption (for captions of images), or headlineLarge (for large headlines).
+
+      The displayMedium property is a large style meant for display text
+      (reserved for short, important text).
+
+      displayMedium theoretically be null.
+
+      Dart, the programming language in which you're writing this app,
+      is null-safe, so it won't let you call methods of objects that are
+      potentially null. In this case, though, you can use the ! operator
+      to assure Dart you know what you're doing. (displayMedium is definitely
+      not null in this case)
+
+      Calling copyWith() on displayMedium returns a copy of the text style
+      with the changes you define. In this case, you're only changing
+      the text's color.
+    */
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
 
     return Card(
       // define color of the card with app theme's colorScheme primary color
       color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text(pair.asPascalCase),
+        child: Text(
+          pair.asPascalCase,
+          style: style,
+        ),
       ),
     );
   }
