@@ -98,24 +98,28 @@ class MyHomePage extends StatelessWidget {
     var pair = appState.current;
 
     return Scaffold(
-      // Column is a simple layout widget
-      body: Column(
-        children: [
-          // add text widget
-          Text('A random idea:'),
-          // add text widget
-          BigCard(pair: pair),
-          // add a button widget
-          // button styles are coming from MaterialApp ThemeData
-          ElevatedButton(
-            onPressed: () {
-              // print button pressed on the console when button is clicked
-              // print('button pressed!');
-              appState.getNext();
-            },
-            child: Text('Next'),
-          ),
-        ],
+      // wrap Column with Center using Flutter Refactor helper
+      // after this the Column is centered horizontally in the scaffold.
+      body: Center(
+        // Column is a simple layout widget
+        child: Column(
+          // center the children vertically in the column
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // add text widget
+            BigCard(pair: pair),
+            // add a button widget
+            // button styles are coming from MaterialApp ThemeData
+            ElevatedButton(
+              onPressed: () {
+                // print button pressed on the console when button is clicked
+                // print('button pressed!');
+                appState.getNext();
+              },
+              child: Text('Next'),
+            ),
+          ],
+        ),
       ),
     );
   }
