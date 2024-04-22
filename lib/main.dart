@@ -95,6 +95,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var pair = appState.current;
 
     return Scaffold(
       // Column is a simple layout widget
@@ -103,7 +104,7 @@ class MyHomePage extends StatelessWidget {
           // add text widget
           Text('A random idea:'),
           // add text widget
-          Text(appState.current.asLowerCase),
+          BigCard(pair: pair),
           // add a button widget
           // button styles are coming from MaterialApp ThemeData
           ElevatedButton(
@@ -117,5 +118,19 @@ class MyHomePage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class BigCard extends StatelessWidget {
+  const BigCard({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(pair.asPascalCase);
   }
 }
