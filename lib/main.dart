@@ -175,46 +175,89 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
-        page = Placeholder();
+        page = FavouritesPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: false,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home),
-                  label: Text('Home'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.favorite),
-                  label: Text('Favorites'),
-                ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                // similar to the notifyListeners - makes sure the UI updates
-                setState(() {
-                  selectedIndex = value;
-                });
-              },
+    // Make MyHomePage responsive
+    /*
+      Flutter provides several widgets that help you make your apps
+      automatically responsive. For example, Wrap is a widget similar to
+      Row or Column that automatically wraps children to the next "line"
+      (called "run") when there isn't enough vertical or horizontal space.
+      There's FittedBox, a widget that automatically fits its child into
+      available space according to your specifications.
+
+      But NavigationRail doesn't automatically show labels when there's enough
+      space because it can't know what is enough space in every context.
+      It's up to you, the developer, to make that call.
+
+      show labels only if MyHomePage is atleast 600 pixels wide.
+
+      Flutter works with logical pixels as a unit of length. They are also
+      sometimes called device-independent pixels.
+
+      A padding of 8 pixels is visually the same regardless of whether the app
+      is running on an old low-res phone or a newer ‘retina' device. There are
+      roughly 38 logical pixels per centimeter, or about 96 logical
+      pixels per inch, of the physical display.
+
+      To achieve responsiveness here we have to use LayoutBuilder widget. It
+      lets you change the widget tree on how much available space you have. To
+      do that wrap the existing Scaffold widget with the builder.
+
+      Use Flutter refactor helper to do this:
+      Inside _MyHomePageState's build method, put your cursor on Scaffold.
+      Call up the Refactor menu with Ctrl+. (Windows/Linux) or Cmd+. (Mac).
+      Select Wrap with Builder and press Enter.
+      Modify the name of the newly added Builder to LayoutBuilder.
+      Modify the callback parameter list from (context) to (context,constraints)
+
+      LayoutBuilder's builder callback is called when the constraints changes.
+      - The user resizes the app's window
+      - The user rotates their phone from portrait to landscape or back
+      - some widget next to MyHomPage grows in size, making the MyHomePage
+        constraints smaller
+      - and soon
+    */
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth >= 600,
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('Home'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.favorite),
+                    label: Text('Favorites'),
+                  ),
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  // similar to the notifyListeners - makes sure the UI updates
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+              ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: page,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -265,6 +308,36 @@ class GeneratorPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// FavouritesPage widget defines all the wordpairs which are liked
+class FavouritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+    // ListView is a column that scrolls
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Text('You have ${appState.favorites.length} favorites:'),
+        ),
+        for (var pair in appState.favorites)
+          // ListTile widget have properties like text, icon and OnTap for
+          // interactions
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: Text(pair.asLowerCase),
+          ),
+      ],
     );
   }
 }
