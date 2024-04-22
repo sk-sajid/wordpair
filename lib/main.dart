@@ -136,7 +136,35 @@ class MyAppState extends ChangeNotifier {
   container, the GeneratorPage(which contains almost same code as the old
   MyHomePage widget).
 */
-class MyHomePage extends StatelessWidget {
+
+/*
+  StateLessWidget vs StateFullWidget
+
+  until now MyAppState covers all your state needs. That's why all the widgets
+  you have written are state less. StateLessWidgets don't contain any mutable
+  state of their own.
+
+  when onDestinationSelected method is called we need to change the selected-
+  Index value. so we need to maintain the state i.e add selectedIndex to the
+  MyAppState. But it is bad practice to add all of the state inside the
+  MyAppState function. Some state is only relevant to a single widget,
+  so it should stay with that widget.
+
+  StateFullWidget have the mutable state to itself.
+  Both MyHomePage and _MyHomePageState are rewritten by Flutter refactor helper
+  :right click MyHomePage, select refactor and select convert to the statefull
+  widget.
+*/
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+// The underscore (_) at the start of _MyHomePageState makes that class private
+// this class extends State and can therefore manage its own state.
+class _MyHomePageState extends State<MyHomePage> {
+  var selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,9 +183,12 @@ class MyHomePage extends StatelessWidget {
                   label: Text('Favorites'),
                 ),
               ],
-              selectedIndex: 0,
+              selectedIndex: selectedIndex,
               onDestinationSelected: (value) {
-                print('selected: $value');
+                // similar to the notifyListeners - makes sure the UI updates
+                setState(() {
+                  selectedIndex = value;
+                });
               },
             ),
           ),
