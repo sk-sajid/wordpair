@@ -67,12 +67,22 @@ class MyApp extends StatelessWidget {
 */
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+  var favorites = <WordPair>[];
 
   // getNext reassings the current with a new random wordpair(change the state)
   // notifyListeners(a method of ChangeNotifier). It ensures anyone watching
   // MyAppState is notified.
   void getNext() {
     current = WordPair.random();
+    notifyListeners();
+  }
+
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
     notifyListeners();
   }
 }
@@ -97,6 +107,13 @@ class MyHomePage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+
     return Scaffold(
       // wrap Column with Center using Flutter Refactor helper
       // after this the Column is centered horizontally in the scaffold.
@@ -108,15 +125,29 @@ class MyHomePage extends StatelessWidget {
           children: [
             // add text widget
             BigCard(pair: pair),
+            SizedBox(height: 10),
             // add a button widget
             // button styles are coming from MaterialApp ThemeData
-            ElevatedButton(
-              onPressed: () {
-                // print button pressed on the console when button is clicked
-                // print('button pressed!');
-                appState.getNext();
-              },
-              child: Text('Next'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // print button pressed on the console when button is clicked
+                    // print('button pressed!');
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
