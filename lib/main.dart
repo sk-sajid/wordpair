@@ -151,9 +151,17 @@ class BigCard extends StatelessWidget {
       your own custom widgets, or the whole app.
       The widget doesn't care what it's wrapping.
     */
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Text(pair.asPascalCase),
+
+    // requests the app's current theme
+    final theme = Theme.of(context);
+
+    return Card(
+      // define color of the card with app theme's colorScheme primary color
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Text(pair.asPascalCase),
+      ),
     );
   }
 }
