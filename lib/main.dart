@@ -121,6 +121,8 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+// this BigCard widget written by Flutter refactoring helper.
+// BigCard is a custom widget and it defines the wordpair
 class BigCard extends StatelessWidget {
   const BigCard({
     super.key,
@@ -131,6 +133,27 @@ class BigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(pair.asPascalCase);
+    // wrap Text widget with padding.
+    // wrapped by the flutter refactor helper
+    /*
+      process:
+      1) right click Text widget
+      2) select refactor
+      3) select wrap with padding
+      4) change padding width to 20.
+
+      Flutter uses Composition over Inheritance whenever it can.
+      Here, instead of padding being an attribute of Text, it's a widget!
+
+      This way, widgets can focus on their single responsibility, and you,
+      the developer, have total freedom in how to compose your UI.
+      For example, you can use the Padding widget to pad text, images, buttons,
+      your own custom widgets, or the whole app.
+      The widget doesn't care what it's wrapping.
+    */
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Text(pair.asPascalCase),
+    );
   }
 }
