@@ -88,7 +88,6 @@ class MyAppState extends ChangeNotifier {
 }
 
 // MyHomePage is the home widget for the MyApp
-
 /*
   1) Every widget defines a build method that's automatically called everytime
   when the widget's circumstances like state changes. so that the widget is
@@ -96,12 +95,85 @@ class MyAppState extends ChangeNotifier {
   2) MyHomePage tracks the app state using the watch method
   3) Every build method must return a widget or (more typically) a nested tree
   of widgets. In this case, the top-level widget is Scaffold
-  4) Column is one of the most basic layout widget in flutter. It takes any
-  number of children and puts them in a column from top to bottom
-  5) Here Column layout widget contains three child widgets, in which second
-  text widget takes appState and access the current state of the app.
+*/
+
+/*
+  1) Removed all the old widgets which are inside the Scaffold widget.
+  In MyHomePage only Scaffold widget is there from the old widgets.
+
+  2) MyHomePage Scaffold contains one row with two childeren: SafeArea and
+  Expand.
+
+  3) The SafeArea ensures that its child is not hidden/unclear by a
+  hardware notch or a status bar
+
+  4) SafeArea wraps around the NavigationRail widget  to prevent the navigation
+  buttons from being obscured by a mobile status bar.
+
+  5) NaviagationRail have two destinations Home and Favourites. extended:false,
+  hides the labels of the destiantion icons.
+
+  6) A selected index of zero selects the first destination, a selected index
+  of one selects the second destination, and so on. For now, it's hard coded to
+  zero.
+
+  7) The navigation rail also defines what happens when the user selects one
+  of the destinations with onDestinationSelected
+
+  8) The second child of the Row is the Expanded widget. Expanded widgets are
+  extremely useful in rows and columns—they let you express layouts where some
+  children take only as much space as they need (SafeArea, in this case) and
+  other widgets should take as much of the remaining room as possible
+  (Expanded, in this case). One way to think about Expanded widgets
+  is that they are "greedy"
+
+  9) try wrapping the SafeArea widget with another Expanded.
+  Two Expanded widgets split all the available horizontal space between
+  themselves, even though the navigation rail only really needed a little
+  slice on the left.
+
+  10) Inside the Expanded widget, there's a colored Container, and inside the
+  container, the GeneratorPage(which contains almost same code as the old
+  MyHomePage widget).
 */
 class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              extended: false,
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text('Home'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.favorite),
+                  label: Text('Favorites'),
+                ),
+              ],
+              selectedIndex: 0,
+              onDestinationSelected: (value) {
+                print('selected: $value');
+              },
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: GeneratorPage(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -114,43 +186,39 @@ class MyHomePage extends StatelessWidget {
       icon = Icons.favorite_border;
     }
 
-    return Scaffold(
-      // wrap Column with Center using Flutter Refactor helper
-      // after this the Column is centered horizontally in the scaffold.
-      body: Center(
-        // Column is a simple layout widget
-        child: Column(
-          // center the children vertically in the column
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // add text widget
-            BigCard(pair: pair),
-            SizedBox(height: 10),
-            // add a button widget
-            // button styles are coming from MaterialApp ThemeData
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    appState.toggleFavorite();
-                  },
-                  icon: Icon(icon),
-                  label: Text('Like'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // print button pressed on the console when button is clicked
-                    // print('button pressed!');
-                    appState.getNext();
-                  },
-                  child: Text('Next'),
-                ),
-              ],
-            ),
-          ],
-        ),
+    // wrap Column with Center using Flutter Refactor helper
+    // after this the Column is centered horizontally in the container widget.
+    return Center(
+      // Column is a simple layout widget
+      child: Column(
+        // center the children vertically in the column
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // add text widget
+          BigCard(pair: pair),
+          SizedBox(height: 10),
+          // add a button widget
+          // button styles are coming from MaterialApp ThemeData
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  appState.toggleFavorite();
+                },
+                icon: Icon(icon),
+                label: Text('Like'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  appState.getNext();
+                },
+                child: Text('Next'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
